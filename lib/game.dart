@@ -1,15 +1,16 @@
 import 'dart:ui';
 import 'dart:async';
 
+import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flame/components.dart';
 import 'package:pixel_adventure/levels/level.dart';
 
-class PixelAdventureGame extends FlameGame {
+class PixelAdventureGame extends FlameGame with HasKeyboardHandlerComponents {
   @override
   Color backgroundColor() => const Color(0xFF211F30);
   @override
-  final world = Level(levelName: "level-01.tmx");
+  final world = Level(levelName: "level-01");
   late final CameraComponent cam;
 
   @override

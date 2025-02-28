@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 import 'package:pixel_adventure/actors/player.dart';
@@ -11,7 +12,7 @@ class Level extends World {
 
   @override
   FutureOr<void> onLoad() async {
-    level = await TiledComponent.load(levelName, Vector2.all(16));
+    level = await TiledComponent.load("$levelName.tmx", Vector2.all(16));
 
     add(level);
 
