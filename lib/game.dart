@@ -1,16 +1,19 @@
-import 'dart:ui';
 import 'dart:async';
 import 'package:flame/game.dart';
 import 'package:flame/events.dart';
 import 'package:flame/components.dart';
+import 'package:flutter/material.dart';
 
 import 'package:pixel_adventure/levels/level.dart';
 import 'package:pixel_adventure/actors/player.dart';
 
-class PixelAdventureGame extends FlameGame with HasKeyboardHandlerComponents {
+class PixelAdventureGame extends FlameGame
+    with HasKeyboardHandlerComponents, DragCallbacks {
   @override
   Color backgroundColor() => const Color(0xFF211F30);
+  bool showJoystick = true;
   late final CameraComponent cam;
+  late JoystickComponent joystick;
   final Player player = Player(character: "Mask Dude");
 
   @override
@@ -29,6 +32,50 @@ class PixelAdventureGame extends FlameGame with HasKeyboardHandlerComponents {
     cam.viewfinder.anchor = Anchor.topLeft;
 
     addAll([cam, world]);
+
+    if (showJoystick) addJoystick();
+
     return super.onLoad();
+  }
+
+  @override
+  void update(double dt) {
+    if (showJoystick) updateJoystick();
+
+    super.update(dt);
+  }
+
+  void addJoystick() {
+    joystick = JoystickComponent(
+      knob: SpriteComponent(sprite: Sprite(images.fromCache("HUD/Knob.png"))),
+      background: SpriteComponent(
+        sprite: Sprite(images.fromCache("HUD/Joystick.png")),
+      ),
+      margin: const EdgeInsets.only(left: 32, bottom: 8),
+    );
+
+    add(joystick);
+  }
+
+  void updateJoystick() {
+    switch (joystick.direction) {
+      case JoystickDirection.up:
+        break;
+      case JoystickDirection.down:
+        break;
+      case JoystickDirection.right:
+      case JoystickDirection.upRight:
+      case JoystickDirection.downRight:
+        player.playerDirection = PlayerDirection.right;
+        break;
+      case JoystickDirection.left:
+      case JoystickDirection.upLeft:
+      case JoystickDirection.downLeft:
+        player.playerDirection = PlayerDirection.left;
+        break;
+      case JoystickDirection.idle:
+        player.playerDirection = PlayerDirection.none;
+        break;
+    }
   }
 }
