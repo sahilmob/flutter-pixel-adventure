@@ -11,7 +11,7 @@ class PixelAdventureGame extends FlameGame
     with HasKeyboardHandlerComponents, DragCallbacks {
   @override
   Color backgroundColor() => const Color(0xFF211F30);
-  bool showJoystick = true;
+  bool showJoystick = false;
   late final CameraComponent cam;
   late JoystickComponent joystick;
   final Player player = Player(character: "Mask Dude");
@@ -63,14 +63,14 @@ class PixelAdventureGame extends FlameGame
         break;
       case JoystickDirection.down:
         break;
-      case JoystickDirection.right:
-      case JoystickDirection.upRight:
-      case JoystickDirection.downRight:
+      case JoystickDirection.right ||
+          JoystickDirection.upRight ||
+          JoystickDirection.downRight:
         player.horizontalMovement = 1;
         break;
-      case JoystickDirection.left:
-      case JoystickDirection.upLeft:
-      case JoystickDirection.downLeft:
+      case JoystickDirection.left ||
+          JoystickDirection.upLeft ||
+          JoystickDirection.downLeft:
         player.horizontalMovement = -1;
         break;
       case JoystickDirection.idle:

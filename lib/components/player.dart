@@ -3,35 +3,50 @@ import 'package:flutter/services.dart';
 
 import 'package:flame/components.dart';
 import 'package:pixel_adventure/game.dart';
+import 'package:pixel_adventure/components/collision.block.dart';
 
 enum PlayerState { idle, running }
 
-class Player extends SpriteAnimationGroupComponent
+base class BasePlayer extends SpriteAnimationGroupComponent
     with HasGameRef<PixelAdventureGame>, KeyboardHandler {
-  Player({super.position, this.character = "Ninja Frog"});
-
+  BasePlayer({super.position, this.character = "Ninja Frog"}) : super();
   static double stepTime = 0.05;
+  List<CollisionBlock> collisionBlocks = [];
 
   final String character;
   late final SpriteAnimation idleAnimation;
   late final SpriteAnimation runningAnimation;
-  double horizontalMovement = 0.0;
+
   double moveSpeed = 100;
+  double horizontalMovement = 0.0;
   Vector2 velocity = Vector2.zero();
+}
 
-  @override
-  FutureOr<void> onLoad() {
-    _loadAllAnimations();
-    return super.onLoad();
+base mixin PlayerHasGameRef on BasePlayer, HasGameRef<PixelAdventureGame> {
+  SpriteAnimation _spriteAnimation(String state, int amount) {
+    return SpriteAnimation.fromFrameData(
+      game.images.fromCache("Main Characters/$character/$state (32x32).png"),
+      SpriteAnimationData.sequenced(
+        amount: amount,
+        stepTime: BasePlayer.stepTime,
+        textureSize: Vector2.all(32),
+      ),
+    );
   }
 
-  @override
-  void update(double dt) {
-    _updatePlayerState();
-    _updatePlayerMovement(dt);
-    super.update(dt);
-  }
+  void _loadAllAnimations() {
+    idleAnimation = _spriteAnimation("Idle", 11);
+    runningAnimation = _spriteAnimation("Run", 12);
 
+    animations = {
+      PlayerState.idle: idleAnimation,
+      PlayerState.running: runningAnimation,
+    };
+    current = PlayerState.idle;
+  }
+}
+
+base mixin PlayerKeyboardHandler on BasePlayer, KeyboardHandler {
   @override
   bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     horizontalMovement = 0.0;
@@ -48,27 +63,24 @@ class Player extends SpriteAnimationGroupComponent
 
     return super.onKeyEvent(event, keysPressed);
   }
+}
 
-  void _loadAllAnimations() {
-    idleAnimation = _spriteAnimation("Idle", 11);
-    runningAnimation = _spriteAnimation("Run", 12);
+base class Player extends BasePlayer
+    with PlayerHasGameRef, PlayerKeyboardHandler {
+  Player({super.position, super.character});
 
-    animations = {
-      PlayerState.idle: idleAnimation,
-      PlayerState.running: runningAnimation,
-    };
-    current = PlayerState.idle;
+  @override
+  FutureOr<void> onLoad() {
+    debugMode = true;
+    _loadAllAnimations();
+    return super.onLoad();
   }
 
-  SpriteAnimation _spriteAnimation(String state, int amount) {
-    return SpriteAnimation.fromFrameData(
-      game.images.fromCache("Main Characters/$character/$state (32x32).png"),
-      SpriteAnimationData.sequenced(
-        amount: amount,
-        stepTime: Player.stepTime,
-        textureSize: Vector2.all(32),
-      ),
-    );
+  @override
+  void update(double dt) {
+    _updatePlayerState();
+    _updatePlayerMovement(dt);
+    super.update(dt);
   }
 
   void _updatePlayerMovement(double dt) {
