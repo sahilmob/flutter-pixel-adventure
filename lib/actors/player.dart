@@ -1,8 +1,7 @@
 import 'dart:async';
+import 'package:flutter/services.dart';
 
 import 'package:flame/components.dart';
-import 'package:flutter/src/services/hardware_keyboard.dart';
-import 'package:flutter/src/services/keyboard_key.g.dart';
 import 'package:pixel_adventure/game.dart';
 
 enum PlayerState { idle, running }
@@ -11,7 +10,7 @@ enum PlayerDirection { left, right, none }
 
 class Player extends SpriteAnimationGroupComponent
     with HasGameRef<PixelAdventureGame>, KeyboardHandler {
-  Player({super.position, required this.character});
+  Player({super.position, this.character = "Ninja Frog"});
 
   final String character;
   late final SpriteAnimation idleAnimation;
