@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import 'package:flame/components.dart';
 import 'package:pixel_adventure/game.dart';
+import 'package:pixel_adventure/utils/collision.dart';
 import 'package:pixel_adventure/components/collision.block.dart';
 
 enum PlayerState { idle, running }
@@ -80,6 +81,7 @@ base class Player extends BasePlayer
   void update(double dt) {
     _updatePlayerState();
     _updatePlayerMovement(dt);
+    _checkHorizontalCollisions();
     super.update(dt);
   }
 
@@ -104,5 +106,22 @@ base class Player extends BasePlayer
     }
 
     current = playerState;
+  }
+
+  void _checkHorizontalCollisions() {
+    for (final b in collisionBlocks) {
+      if (!b.isPlatform) {
+        if (checkCollision(this, b)) {
+          if (velocity.x > 0) {
+            velocity.x = 0;
+            position.x = b.x - width;
+          }
+          if (velocity.x < 0) {
+            velocity.x = 0;
+            position.x = b.x + b.width + width;
+          }
+        }
+      }
+    }
   }
 }
