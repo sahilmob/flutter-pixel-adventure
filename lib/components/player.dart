@@ -1,11 +1,11 @@
 import 'dart:async';
-import 'package:flame/collisions.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flame/components.dart';
-import 'package:pixel_adventure/components/player_hitbox.dart';
 import 'package:pixel_adventure/game.dart';
+import 'package:pixel_adventure/constants.dart';
 import 'package:pixel_adventure/utils/collision.dart';
+import 'package:pixel_adventure/components/player_hitbox.dart';
 import 'package:pixel_adventure/components/collision_block.dart';
 
 enum PlayerState { idle, running, jumping, falling }
@@ -13,7 +13,6 @@ enum PlayerState { idle, running, jumping, falling }
 base class BasePlayer extends SpriteAnimationGroupComponent
     with HasGameRef<PixelAdventureGame>, KeyboardHandler {
   BasePlayer({super.position, this.character = "Ninja Frog"}) : super();
-  static double stepTime = 0.05;
   List<CollisionBlock> collisionBlocks = [];
 
   final double _gravity = 9.8;
@@ -45,7 +44,7 @@ base mixin PlayerHasGameRef on BasePlayer, HasGameRef<PixelAdventureGame> {
       game.images.fromCache("Main Characters/$character/$state (32x32).png"),
       SpriteAnimationData.sequenced(
         amount: amount,
-        stepTime: BasePlayer.stepTime,
+        stepTime: stepTime,
         textureSize: Vector2.all(32),
       ),
     );

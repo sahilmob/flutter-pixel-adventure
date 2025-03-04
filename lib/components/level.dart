@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
+import 'package:pixel_adventure/components/fruit.dart';
 
 import 'package:pixel_adventure/game.dart';
 import 'package:pixel_adventure/components/player.dart';
@@ -63,6 +64,9 @@ class Level extends World with HasGameRef<PixelAdventureGame> {
             player.position = Vector2(sp.x, sp.y);
             add(player);
             break;
+          case "Fruit":
+            final fruit = Fruit(name: sp.name, position: Vector2(sp.x, sp.y));
+            add(fruit);
         }
       }
     }
