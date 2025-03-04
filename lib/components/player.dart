@@ -1,11 +1,13 @@
 import 'dart:async';
+import 'package:flame/collisions.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flame/components.dart';
 import 'package:pixel_adventure/game.dart';
 import 'package:pixel_adventure/constants.dart';
 import 'package:pixel_adventure/utils/collision.dart';
-import 'package:pixel_adventure/components/player_hitbox.dart';
+import 'package:pixel_adventure/components/fruit.dart';
+import 'package:pixel_adventure/components/custom_hitbox.dart';
 import 'package:pixel_adventure/components/collision_block.dart';
 
 enum PlayerState { idle, running, jumping, falling }
@@ -30,7 +32,7 @@ base class BasePlayer extends SpriteAnimationGroupComponent
   bool isOnGround = false;
   double horizontalMovement = 0.0;
   Vector2 velocity = Vector2.zero();
-  PlayerHitbox hitbox = PlayerHitbox(
+  CustomHitBox hitbox = CustomHitBox(
     offsetX: 10,
     offsetY: 4,
     width: 14,
@@ -88,7 +90,7 @@ base mixin PlayerKeyboardHandler on BasePlayer, KeyboardHandler {
 }
 
 base class Player extends BasePlayer
-    with PlayerHasGameRef, PlayerKeyboardHandler {
+    with PlayerHasGameRef, PlayerKeyboardHandler, CollisionCallbacks {
   Player({super.position, super.character});
 
   @override
@@ -112,6 +114,15 @@ base class Player extends BasePlayer
     _applyGravity(dt);
     _checkVerticalCollisions();
     super.update(dt);
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    print(other);
+    if (other is Fruit) {
+      other.onCollide();
+    }
+    super.onCollision(intersectionPoints, other);
   }
 
   void _updatePlayerMovement(double dt) {

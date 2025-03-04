@@ -1,17 +1,28 @@
 import 'dart:async';
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 
 import 'package:pixel_adventure/game.dart';
 import 'package:pixel_adventure/constants.dart';
+import 'package:pixel_adventure/components/custom_hitbox.dart';
 
 class Fruit extends SpriteAnimationComponent
-    with HasGameRef<PixelAdventureGame> {
+    with HasGameRef<PixelAdventureGame>, CollisionCallbacks {
   final String name;
+  final hitbox = CustomHitBox(offsetX: 10, offsetY: 10, width: 12, height: 12);
   Fruit({this.name = "Apple", super.position, super.size});
 
   @override
   FutureOr<void> onLoad() {
     priority = -1;
+    debugMode = true;
+    add(
+      RectangleHitbox(
+        position: Vector2(hitbox.offsetX, hitbox.offsetY),
+        size: Vector2(hitbox.width, hitbox.height),
+        collisionType: CollisionType.passive,
+      ),
+    );
     animation = SpriteAnimation.fromFrameData(
       game.images.fromCache("Items/Fruits/$name.png"),
       SpriteAnimationData.sequenced(
@@ -21,5 +32,9 @@ class Fruit extends SpriteAnimationComponent
       ),
     );
     return super.onLoad();
+  }
+
+  void onCollide() {
+    removeFromParent();
   }
 }

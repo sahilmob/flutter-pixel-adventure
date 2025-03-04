@@ -8,7 +8,7 @@ import 'package:pixel_adventure/components/level.dart';
 import 'package:pixel_adventure/components/player.dart';
 
 class PixelAdventureGame extends FlameGame
-    with HasKeyboardHandlerComponents, DragCallbacks {
+    with HasKeyboardHandlerComponents, DragCallbacks, HasCollisionDetection {
   @override
   Color backgroundColor() => const Color(0xFF211F30);
   bool showJoystick = false;
