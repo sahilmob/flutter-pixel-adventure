@@ -6,7 +6,7 @@ import 'package:pixel_adventure/game.dart';
 import 'package:pixel_adventure/utils/collision.dart';
 import 'package:pixel_adventure/components/collision.block.dart';
 
-enum PlayerState { idle, running }
+enum PlayerState { idle, running, jumping, falling }
 
 base class BasePlayer extends SpriteAnimationGroupComponent
     with HasGameRef<PixelAdventureGame>, KeyboardHandler {
@@ -15,7 +15,7 @@ base class BasePlayer extends SpriteAnimationGroupComponent
   List<CollisionBlock> collisionBlocks = [];
 
   final double _gravity = 9.8;
-  final double _jumpForce = 460;
+  final double _jumpForce = 280;
   final double _terminalVelocity = 300;
 
   final String character;
@@ -155,7 +155,6 @@ base class Player extends BasePlayer
   void _checkVerticalCollisions() {
     for (final b in collisionBlocks) {
       if (b.isPlatform) {
-      } else {
         if (checkCollision(this, b)) {
           if (velocity.y > 0) {
             velocity.y = 0;
@@ -164,9 +163,18 @@ base class Player extends BasePlayer
             break;
           }
         }
-        if (velocity.y < 0) {
-          velocity.y = 0;
-          position.y = b.y + b.height;
+      } else {
+        if (checkCollision(this, b)) {
+          if (velocity.y > 0) {
+            velocity.y = 0;
+            position.y = b.y - height;
+            isOnGround = true;
+            break;
+          }
+          if (velocity.y < 0) {
+            velocity.y = 0;
+            position.y = b.y + b.height;
+          }
         }
       }
     }
