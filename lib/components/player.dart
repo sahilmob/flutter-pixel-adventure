@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'package:flame/collisions.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flame/components.dart';
+import 'package:pixel_adventure/components/player_hitbox.dart';
 import 'package:pixel_adventure/game.dart';
 import 'package:pixel_adventure/utils/collision.dart';
 import 'package:pixel_adventure/components/collision.block.dart';
@@ -29,6 +31,12 @@ base class BasePlayer extends SpriteAnimationGroupComponent
   bool isOnGround = false;
   double horizontalMovement = 0.0;
   Vector2 velocity = Vector2.zero();
+  PlayerHitbox hitbox = PlayerHitbox(
+    offsetX: 10,
+    offsetY: 4,
+    width: 14,
+    height: 28,
+  );
 }
 
 base mixin PlayerHasGameRef on BasePlayer, HasGameRef<PixelAdventureGame> {
@@ -86,8 +94,14 @@ base class Player extends BasePlayer
 
   @override
   FutureOr<void> onLoad() {
-    debugMode = true;
+    // debugMode = true;
     _loadAllAnimations();
+    // add(
+    //   RectangleHitbox(
+    //     position: Vector2(hitbox.offsetX, hitbox.offsetY),
+    //     size: Vector2(hitbox.width, hitbox.height),
+    //   ),
+    // );
     return super.onLoad();
   }
 
@@ -147,12 +161,12 @@ base class Player extends BasePlayer
         if (checkCollision(this, b)) {
           if (velocity.x > 0) {
             velocity.x = 0;
-            position.x = b.x - width;
+            position.x = b.x - hitbox.offsetX - hitbox.width;
             break;
           }
           if (velocity.x < 0) {
             velocity.x = 0;
-            position.x = b.x + b.width + width;
+            position.x = b.x + b.width + hitbox.width + hitbox.offsetX;
             break;
           }
         }
@@ -172,7 +186,7 @@ base class Player extends BasePlayer
         if (checkCollision(this, b)) {
           if (velocity.y > 0) {
             velocity.y = 0;
-            position.y = b.y - height;
+            position.y = b.y - hitbox.height - hitbox.offsetY;
             isOnGround = true;
             break;
           }
@@ -181,13 +195,13 @@ base class Player extends BasePlayer
         if (checkCollision(this, b)) {
           if (velocity.y > 0) {
             velocity.y = 0;
-            position.y = b.y - height;
+            position.y = b.y - hitbox.height - hitbox.offsetY;
             isOnGround = true;
             break;
           }
           if (velocity.y < 0) {
             velocity.y = 0;
-            position.y = b.y + b.height;
+            position.y = b.y + b.height - hitbox.offsetY;
           }
         }
       }
