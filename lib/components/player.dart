@@ -6,7 +6,7 @@ import 'package:flame/components.dart';
 import 'package:pixel_adventure/components/player_hitbox.dart';
 import 'package:pixel_adventure/game.dart';
 import 'package:pixel_adventure/utils/collision.dart';
-import 'package:pixel_adventure/components/collision.block.dart';
+import 'package:pixel_adventure/components/collision_block.dart';
 
 enum PlayerState { idle, running, jumping, falling }
 
