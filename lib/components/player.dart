@@ -21,6 +21,8 @@ base class BasePlayer extends SpriteAnimationGroupComponent
   final String character;
   late final SpriteAnimation idleAnimation;
   late final SpriteAnimation runningAnimation;
+  late final SpriteAnimation jumpingAnimation;
+  late final SpriteAnimation fallingAnimation;
 
   double moveSpeed = 100;
   bool hasJumped = false;
@@ -44,10 +46,14 @@ base mixin PlayerHasGameRef on BasePlayer, HasGameRef<PixelAdventureGame> {
   void _loadAllAnimations() {
     idleAnimation = _spriteAnimation("Idle", 11);
     runningAnimation = _spriteAnimation("Run", 12);
+    jumpingAnimation = _spriteAnimation("Jump", 1);
+    fallingAnimation = _spriteAnimation("Fall", 1);
 
     animations = {
       PlayerState.idle: idleAnimation,
       PlayerState.running: runningAnimation,
+      PlayerState.jumping: jumpingAnimation,
+      PlayerState.falling: fallingAnimation,
     };
     current = PlayerState.idle;
   }
@@ -122,6 +128,14 @@ base class Player extends BasePlayer
 
     if (velocity.x > 0 || velocity.x < 0) {
       playerState = PlayerState.running;
+    }
+
+    if (velocity.y > _gravity) {
+      playerState = PlayerState.falling;
+    }
+
+    if (velocity.y < 0) {
+      playerState = PlayerState.jumping;
     }
 
     current = playerState;
