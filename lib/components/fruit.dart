@@ -16,7 +16,7 @@ class Fruit extends SpriteAnimationComponent
   @override
   FutureOr<void> onLoad() {
     priority = -1;
-    debugMode = true;
+    debugMode = false;
     add(
       RectangleHitbox(
         position: Vector2(hitbox.offsetX, hitbox.offsetY),
@@ -35,7 +35,7 @@ class Fruit extends SpriteAnimationComponent
     return super.onLoad();
   }
 
-  void onCollide() {
+  void onCollide() async {
     if (_collected) {
       animation = SpriteAnimation.fromFrameData(
         game.images.fromCache("Items/Fruits/Collected.png"),
@@ -46,8 +46,9 @@ class Fruit extends SpriteAnimationComponent
           loop: false,
         ),
       );
-      _collected = true;
-      Future.delayed(const Duration(milliseconds: 400), removeFromParent);
     }
+    _collected = true;
+    await Future.delayed(const Duration(milliseconds: 400));
+    removeFromParent();
   }
 }

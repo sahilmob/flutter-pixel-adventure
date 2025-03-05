@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="40" height="23" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="34">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="40" height="23" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="36">
  <tileset firstgid="1" source="Pixel Adventure.tsx"/>
  <layer id="1" name="Background" width="40" height="23">
   <properties>
@@ -32,7 +32,7 @@
 </data>
  </layer>
  <objectgroup id="2" name="Spawnpoints">
-  <object id="5" name="Player" type="Player" x="320" y="272" width="32" height="32"/>
+  <object id="5" name="Player" type="Player" x="128" y="240" width="32" height="32"/>
   <object id="23" name="Bananas" type="Fruit" x="80" y="96" width="32" height="32"/>
   <object id="24" name="Cherries" type="Fruit" x="80" y="144" width="32" height="32"/>
   <object id="25" name="Apple" type="Fruit" x="80" y="192" width="32" height="32"/>
@@ -44,6 +44,20 @@
   <object id="31" name="Cherries" type="Fruit" x="400" y="112" width="32" height="32"/>
   <object id="32" name="Kiwi" type="Fruit" x="496" y="128" width="32" height="32"/>
   <object id="33" name="Orange" type="Fruit" x="496" y="192" width="32" height="32"/>
+  <object id="34" type="Saw" x="288" y="304" width="32" height="32">
+   <properties>
+    <property name="isVertical" type="bool" value="false"/>
+    <property name="offNeg" type="float" value="8"/>
+    <property name="offPos" type="float" value="10"/>
+   </properties>
+  </object>
+  <object id="35" type="Saw" x="288" y="96" width="32" height="32">
+   <properties>
+    <property name="isVertical" type="bool" value="true"/>
+    <property name="offNeg" type="float" value="3"/>
+    <property name="offPos" type="float" value="6"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup id="3" name="Collisions">
   <object id="6" x="32" y="48" width="16" height="272"/>

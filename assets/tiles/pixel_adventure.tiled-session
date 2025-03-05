@@ -17,6 +17,7 @@
     "openFiles": [
     ],
     "project": "pixel_adventure.tiled-project",
+    "property.type": "bool",
     "recentFiles": [
     ],
     "tileset.lastUsedFormat": "tsx",
