@@ -8,6 +8,7 @@ import 'package:pixel_adventure/constants.dart';
 import 'package:pixel_adventure/components/saw.dart';
 import 'package:pixel_adventure/utils/collision.dart';
 import 'package:pixel_adventure/components/fruit.dart';
+import 'package:pixel_adventure/components/checkpoint.dart';
 import 'package:pixel_adventure/components/custom_hitbox.dart';
 import 'package:pixel_adventure/components/collision_block.dart';
 
@@ -137,25 +138,22 @@ base mixin PlayerKeyboardHandler on BasePlayer, KeyboardHandler {
 
 base mixin PlayerReSpawn on BasePlayer {
   void _respawn() async {
-    // 50ms/frame for 7 frames
-    const hitDuration = Duration(milliseconds: 50 * 7);
-    const appearingDuration = Duration(milliseconds: 50 * 7);
-    const canMoveDelay = Duration(milliseconds: 400);
     var appearingOffset = Vector2.all(96 - 64);
     gotHit = true;
     current = PlayerState.hit;
-    await Future.delayed(hitDuration);
-    scale.x = 1;
-    // Appearing animation is 96 * 96
-    // while player is 64 * 64
-    position = startingPosition - appearingOffset;
-    current = PlayerState.appearing;
-    await Future.delayed(appearingDuration);
-    velocity = Vector2.all(0);
-    position = startingPosition;
-    _updatePlayerState();
-    await Future.delayed(canMoveDelay);
-    gotHit = false;
+    animationTicker?.onComplete = () {
+      scale.x = 1;
+      // Appearing animation is 96 * 96
+      // while player is 64 * 64
+      position = startingPosition - appearingOffset;
+      current = PlayerState.appearing;
+      animationTicker?.onComplete = () async {
+        velocity = Vector2.all(0);
+        position = startingPosition;
+        _updatePlayerState();
+        gotHit = false;
+      };
+    };
   }
 }
 
@@ -198,7 +196,11 @@ base class Player extends BasePlayer
     if (other is Fruit) {
       other.onCollide();
     } else if (other is Saw) {
-      _respawn();
+      if (!gotHit) {
+        _respawn();
+      }
+    } else if (other is Checkpoint) {
+      other.onCollide();
     }
 
     super.onCollision(intersectionPoints, other);

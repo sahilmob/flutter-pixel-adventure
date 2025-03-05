@@ -35,20 +35,19 @@ class Fruit extends SpriteAnimationComponent
     return super.onLoad();
   }
 
-  void onCollide() async {
+  void onCollide() {
     if (_collected) {
       animation = SpriteAnimation.fromFrameData(
         game.images.fromCache("Items/Fruits/Collected.png"),
         SpriteAnimationData.sequenced(
           amount: 6,
+          loop: false,
           stepTime: stepTime,
           textureSize: Vector2.all(32),
-          loop: false,
         ),
       );
     }
     _collected = true;
-    await Future.delayed(const Duration(milliseconds: 400));
-    removeFromParent();
+    animation?.createTicker().onComplete = () => removeFromParent();
   }
 }
