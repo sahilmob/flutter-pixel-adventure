@@ -97,12 +97,12 @@ base class Player extends BasePlayer
   FutureOr<void> onLoad() {
     // debugMode = true;
     _loadAllAnimations();
-    // add(
-    //   RectangleHitbox(
-    //     position: Vector2(hitbox.offsetX, hitbox.offsetY),
-    //     size: Vector2(hitbox.width, hitbox.height),
-    //   ),
-    // );
+    add(
+      RectangleHitbox(
+        position: Vector2(hitbox.offsetX, hitbox.offsetY),
+        size: Vector2(hitbox.width, hitbox.height),
+      ),
+    );
     return super.onLoad();
   }
 
@@ -118,7 +118,6 @@ base class Player extends BasePlayer
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    print(other);
     if (other is Fruit) {
       other.onCollide();
     }
