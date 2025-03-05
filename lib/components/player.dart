@@ -43,6 +43,32 @@ base class BasePlayer extends SpriteAnimationGroupComponent
     width: 14,
     height: 28,
   );
+
+  void _updatePlayerState() {
+    PlayerState playerState = PlayerState.idle;
+
+    // check if flipped or not using scale;
+    // see scale docs
+    if (velocity.x < 0 && scale.x > 0) {
+      flipHorizontallyAroundCenter();
+    } else if (velocity.x > 0 && scale.x < 0) {
+      flipHorizontallyAroundCenter();
+    }
+
+    if (velocity.x > 0 || velocity.x < 0) {
+      playerState = PlayerState.running;
+    }
+
+    if (velocity.y > _gravity) {
+      playerState = PlayerState.falling;
+    }
+
+    if (velocity.y < 0) {
+      playerState = PlayerState.jumping;
+    }
+
+    current = playerState;
+  }
 }
 
 base mixin PlayerHasGameRef on BasePlayer, HasGameRef<PixelAdventureGame> {
@@ -109,8 +135,36 @@ base mixin PlayerKeyboardHandler on BasePlayer, KeyboardHandler {
   }
 }
 
+base mixin PlayerReSpawn on BasePlayer {
+  void _respawn() async {
+    // 50ms/frame for 7 frames
+    const hitDuration = Duration(milliseconds: 50 * 7);
+    const appearingDuration = Duration(milliseconds: 50 * 7);
+    const canMoveDelay = Duration(milliseconds: 400);
+    var appearingOffset = Vector2.all(96 - 64);
+    gotHit = true;
+    current = PlayerState.hit;
+    await Future.delayed(hitDuration);
+    scale.x = 1;
+    // Appearing animation is 96 * 96
+    // while player is 64 * 64
+    position = startingPosition - appearingOffset;
+    current = PlayerState.appearing;
+    await Future.delayed(appearingDuration);
+    velocity = Vector2.all(0);
+    position = startingPosition;
+    _updatePlayerState();
+    await Future.delayed(canMoveDelay);
+    gotHit = false;
+  }
+}
+
 base class Player extends BasePlayer
-    with PlayerHasGameRef, PlayerKeyboardHandler, CollisionCallbacks {
+    with
+        PlayerHasGameRef,
+        PlayerKeyboardHandler,
+        CollisionCallbacks,
+        PlayerReSpawn {
   Player({super.position, super.character});
 
   @override
@@ -164,32 +218,6 @@ base class Player extends BasePlayer
     hasJumped = false;
   }
 
-  void _updatePlayerState() {
-    PlayerState playerState = PlayerState.idle;
-
-    // check if flipped or not using scale;
-    // see scale docs
-    if (velocity.x < 0 && scale.x > 0) {
-      flipHorizontallyAroundCenter();
-    } else if (velocity.x > 0 && scale.x < 0) {
-      flipHorizontallyAroundCenter();
-    }
-
-    if (velocity.x > 0 || velocity.x < 0) {
-      playerState = PlayerState.running;
-    }
-
-    if (velocity.y > _gravity) {
-      playerState = PlayerState.falling;
-    }
-
-    if (velocity.y < 0) {
-      playerState = PlayerState.jumping;
-    }
-
-    current = playerState;
-  }
-
   void _checkHorizontalCollisions() {
     for (final b in collisionBlocks) {
       if (!b.isPlatform) {
@@ -241,27 +269,5 @@ base class Player extends BasePlayer
         }
       }
     }
-  }
-
-  void _respawn() async {
-    // 50ms/frame for 7 frames
-    const hitDuration = Duration(microseconds: 50 * 7);
-    const appearingDuration = Duration(microseconds: 50 * 7);
-    const canMoveDelay = Duration(microseconds: 5400);
-    var appearingOffset = Vector2.all(96 - 64);
-    gotHit = true;
-    current = PlayerState.hit;
-    await Future.delayed(hitDuration);
-    scale.x = 1;
-    // Appearing animation is 96 * 96
-    // while player is 64 * 64
-    position = startingPosition - appearingOffset;
-    current = PlayerState.appearing;
-    await Future.delayed(appearingDuration);
-    velocity = Vector2.all(0);
-    _updatePlayerState();
-    position = startingPosition + appearingOffset;
-    await Future.delayed(canMoveDelay);
-    gotHit = false;
   }
 }
