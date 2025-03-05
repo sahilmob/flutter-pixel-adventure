@@ -36,7 +36,7 @@ class Fruit extends SpriteAnimationComponent
   }
 
   void onCollide() {
-    if (_collected) {
+    if (!_collected) {
       animation = SpriteAnimation.fromFrameData(
         game.images.fromCache("Items/Fruits/Collected.png"),
         SpriteAnimationData.sequenced(
@@ -46,8 +46,8 @@ class Fruit extends SpriteAnimationComponent
           textureSize: Vector2.all(32),
         ),
       );
+      _collected = true;
+      animationTicker?.onComplete = removeFromParent;
     }
-    _collected = true;
-    animation?.createTicker().onComplete = () => removeFromParent();
   }
 }

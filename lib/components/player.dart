@@ -12,7 +12,15 @@ import 'package:pixel_adventure/components/checkpoint.dart';
 import 'package:pixel_adventure/components/custom_hitbox.dart';
 import 'package:pixel_adventure/components/collision_block.dart';
 
-enum PlayerState { idle, running, jumping, falling, hit, appearing }
+enum PlayerState {
+  hit,
+  idle,
+  running,
+  jumping,
+  falling,
+  appearing,
+  disappearing,
+}
 
 base class BasePlayer extends SpriteAnimationGroupComponent
     with HasGameRef<PixelAdventureGame>, KeyboardHandler {
@@ -30,11 +38,13 @@ base class BasePlayer extends SpriteAnimationGroupComponent
   late final SpriteAnimation jumpingAnimation;
   late final SpriteAnimation fallingAnimation;
   late final SpriteAnimation appearingAnimation;
+  late final SpriteAnimation disappearingAnimation;
 
   double moveSpeed = 100;
   bool gotHit = false;
   bool hasJumped = false;
   bool isOnGround = false;
+  bool reachedCheckpoint = false;
   double horizontalMovement = 0.0;
   Vector2 velocity = Vector2.zero();
   Vector2 startingPosition = Vector2.zero();
@@ -102,6 +112,8 @@ base mixin PlayerHasGameRef on BasePlayer, HasGameRef<PixelAdventureGame> {
     fallingAnimation = _spriteAnimation("Fall", 1);
     hitAnimation = _spriteAnimation("Hit", 7)..loop = false;
     appearingAnimation = _visibilityAnimation("Appearing", 7)..loop = false;
+    disappearingAnimation = _visibilityAnimation("Disappearing", 7)
+      ..loop = false;
 
     animations = {
       PlayerState.hit: hitAnimation,
@@ -110,6 +122,7 @@ base mixin PlayerHasGameRef on BasePlayer, HasGameRef<PixelAdventureGame> {
       PlayerState.jumping: jumpingAnimation,
       PlayerState.falling: fallingAnimation,
       PlayerState.appearing: appearingAnimation,
+      PlayerState.disappearing: disappearingAnimation,
     };
     current = PlayerState.idle;
   }
@@ -157,12 +170,31 @@ base mixin PlayerReSpawn on BasePlayer {
   }
 }
 
+base mixin ReachCheckPointHandler on BasePlayer {
+  void _onReachCheckpoint() {
+    reachedCheckpoint = true;
+    if (scale.x > 0) {
+      position = position - Vector2.all(32);
+    } else if (scale.x < 0) {
+      scale.x = 1;
+      position = position - Vector2(32, -32);
+    }
+
+    current = PlayerState.disappearing;
+    animationTicker?.onComplete = () async {
+      removeFromParent();
+      game.loadNextLevel();
+    };
+  }
+}
+
 base class Player extends BasePlayer
     with
+        PlayerReSpawn,
         PlayerHasGameRef,
-        PlayerKeyboardHandler,
         CollisionCallbacks,
-        PlayerReSpawn {
+        PlayerKeyboardHandler,
+        ReachCheckPointHandler {
   Player({super.position, super.character});
 
   @override
@@ -181,7 +213,7 @@ base class Player extends BasePlayer
 
   @override
   void update(double dt) {
-    if (!gotHit) {
+    if (!gotHit && !reachedCheckpoint) {
       _updatePlayerState();
       _updatePlayerMovement(dt);
       _checkHorizontalCollisions();
@@ -193,6 +225,8 @@ base class Player extends BasePlayer
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    if (reachedCheckpoint) return;
+
     if (other is Fruit) {
       other.onCollide();
     } else if (other is Saw) {
@@ -200,6 +234,7 @@ base class Player extends BasePlayer
         _respawn();
       }
     } else if (other is Checkpoint) {
+      _onReachCheckpoint();
       other.onCollide();
     }
 
