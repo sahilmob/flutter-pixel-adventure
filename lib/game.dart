@@ -18,7 +18,7 @@ class PixelAdventureGame extends FlameGame
   Color backgroundColor() => const Color(0xFF211F30);
   late Player player;
   bool showControls = false;
-  bool playSounds = false;
+  bool playSounds = true;
   double soundVolume = 1.0;
   late JoystickComponent joystick;
   List<String> levels = ["Level-01", "Level-01"];
