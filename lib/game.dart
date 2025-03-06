@@ -17,7 +17,7 @@ class PixelAdventureGame extends FlameGame
   @override
   Color backgroundColor() => const Color(0xFF211F30);
   late Player player;
-  bool showControls = true;
+  bool showControls = false;
   late JoystickComponent joystick;
   List<String> levels = ["Level-01", "Level-01"];
   int currentLevelIndex = 0;

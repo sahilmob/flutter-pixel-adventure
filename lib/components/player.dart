@@ -54,6 +54,8 @@ base class BasePlayer extends SpriteAnimationGroupComponent
     width: 14,
     height: 28,
   );
+  double accTime = 0;
+  double fixedDt = 1 / 60;
 
   void _updatePlayerState() {
     PlayerState playerState = PlayerState.idle;
@@ -213,18 +215,26 @@ base class Player extends BasePlayer
 
   @override
   void update(double dt) {
-    if (!gotHit && !reachedCheckpoint) {
-      _updatePlayerState();
-      _updatePlayerMovement(dt);
-      _checkHorizontalCollisions();
-      _applyGravity(dt);
-      _checkVerticalCollisions();
+    accTime += dt;
+    while (accTime >= fixedDt) {
+      if (!gotHit && !reachedCheckpoint) {
+        _updatePlayerState();
+        _updatePlayerMovement(fixedDt);
+        _checkHorizontalCollisions();
+        _applyGravity(fixedDt);
+        _checkVerticalCollisions();
+      }
+      accTime -= dt;
     }
+
     super.update(dt);
   }
 
   @override
-  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+  void onCollisionStart(
+    Set<Vector2> intersectionPoints,
+    PositionComponent other,
+  ) {
     if (reachedCheckpoint) return;
 
     if (other is Fruit) {
@@ -237,8 +247,7 @@ base class Player extends BasePlayer
       _onReachCheckpoint();
       other.onCollide();
     }
-
-    super.onCollision(intersectionPoints, other);
+    super.onCollisionStart(intersectionPoints, other);
   }
 
   void _updatePlayerMovement(double dt) {
