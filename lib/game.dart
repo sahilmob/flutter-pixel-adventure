@@ -18,6 +18,8 @@ class PixelAdventureGame extends FlameGame
   Color backgroundColor() => const Color(0xFF211F30);
   late Player player;
   bool showControls = false;
+  bool playSounds = false;
+  double soundVolume = 1.0;
   late JoystickComponent joystick;
   List<String> levels = ["Level-01", "Level-01"];
   int currentLevelIndex = 0;
@@ -77,8 +79,10 @@ class PixelAdventureGame extends FlameGame
   void loadNextLevel() {
     if (currentLevelIndex < levels.length - 1) {
       currentLevelIndex++;
-      _loadLevel();
+    } else {
+      currentLevelIndex = 0;
     }
+    _loadLevel();
   }
 
   void _loadLevel() async {

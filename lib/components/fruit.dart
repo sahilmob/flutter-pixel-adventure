@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
 
 import 'package:pixel_adventure/game.dart';
 import 'package:pixel_adventure/constants.dart';
@@ -9,6 +10,7 @@ import 'package:pixel_adventure/components/custom_hitbox.dart';
 class Fruit extends SpriteAnimationComponent
     with HasGameRef<PixelAdventureGame>, CollisionCallbacks {
   final String name;
+  bool _collected = false;
   final hitbox = CustomHitBox(offsetX: 10, offsetY: 10, width: 12, height: 12);
   Fruit({this.name = "Apple", super.position, super.size});
 
@@ -35,15 +37,22 @@ class Fruit extends SpriteAnimationComponent
   }
 
   void onCollide() {
-    animation = SpriteAnimation.fromFrameData(
-      game.images.fromCache("Items/Fruits/Collected.png"),
-      SpriteAnimationData.sequenced(
-        amount: 6,
-        loop: false,
-        stepTime: stepTime,
-        textureSize: Vector2.all(32),
-      ),
-    );
-    animationTicker?.onComplete = removeFromParent;
+    if (!_collected) {
+      _collected = true;
+      if (game.playSounds) {
+        FlameAudio.play("collect_fruit.wav", volume: game.soundVolume);
+      }
+
+      animation = SpriteAnimation.fromFrameData(
+        game.images.fromCache("Items/Fruits/Collected.png"),
+        SpriteAnimationData.sequenced(
+          amount: 6,
+          loop: false,
+          stepTime: stepTime,
+          textureSize: Vector2.all(32),
+        ),
+      );
+      animationTicker?.onComplete = removeFromParent;
+    }
   }
 }

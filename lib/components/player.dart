@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flame/collisions.dart';
 import 'package:flutter/services.dart';
+import 'package:flame_audio/flame_audio.dart';
 
 import 'package:flame/components.dart';
 import 'package:pixel_adventure/game.dart';
@@ -153,6 +154,9 @@ base mixin PlayerKeyboardHandler on BasePlayer, KeyboardHandler {
 
 base mixin PlayerReSpawn on BasePlayer {
   void _respawn() async {
+    if (game.playSounds) {
+      FlameAudio.play("hit.wav", volume: game.soundVolume);
+    }
     var appearingOffset = Vector2.all(96 - 64);
     gotHit = true;
     current = PlayerState.hit;
@@ -174,6 +178,10 @@ base mixin PlayerReSpawn on BasePlayer {
 
 base mixin ReachCheckPointHandler on BasePlayer {
   void _onReachCheckpoint() {
+    if (game.playSounds) {
+      FlameAudio.play("disappear.wav", volume: game.soundVolume);
+    }
+
     reachedCheckpoint = true;
     if (scale.x > 0) {
       position = position - Vector2.all(32);
@@ -258,6 +266,10 @@ base class Player extends BasePlayer
   }
 
   void _playerJump(double dt) {
+    if (game.playSounds) {
+      FlameAudio.play("jump.wav", volume: game.soundVolume);
+    }
+
     velocity.y = -_jumpForce;
     position.y += velocity.y * dt;
     isOnGround = false;
