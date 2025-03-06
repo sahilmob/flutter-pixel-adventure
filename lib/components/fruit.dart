@@ -9,7 +9,6 @@ import 'package:pixel_adventure/components/custom_hitbox.dart';
 class Fruit extends SpriteAnimationComponent
     with HasGameRef<PixelAdventureGame>, CollisionCallbacks {
   final String name;
-  bool _collected = false;
   final hitbox = CustomHitBox(offsetX: 10, offsetY: 10, width: 12, height: 12);
   Fruit({this.name = "Apple", super.position, super.size});
 
@@ -36,18 +35,15 @@ class Fruit extends SpriteAnimationComponent
   }
 
   void onCollide() {
-    if (!_collected) {
-      animation = SpriteAnimation.fromFrameData(
-        game.images.fromCache("Items/Fruits/Collected.png"),
-        SpriteAnimationData.sequenced(
-          amount: 6,
-          loop: false,
-          stepTime: stepTime,
-          textureSize: Vector2.all(32),
-        ),
-      );
-      _collected = true;
-      animationTicker?.onComplete = removeFromParent;
-    }
+    animation = SpriteAnimation.fromFrameData(
+      game.images.fromCache("Items/Fruits/Collected.png"),
+      SpriteAnimationData.sequenced(
+        amount: 6,
+        loop: false,
+        stepTime: stepTime,
+        textureSize: Vector2.all(32),
+      ),
+    );
+    animationTicker?.onComplete = removeFromParent;
   }
 }
