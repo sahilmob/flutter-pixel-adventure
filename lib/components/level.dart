@@ -11,8 +11,8 @@ import 'package:pixel_adventure/components/background_tile.dart';
 import 'package:pixel_adventure/components/collision_block.dart';
 
 class Level extends World with HasGameRef<PixelAdventureGame> {
-  final String levelName;
   final Player player;
+  final String levelName;
   late TiledComponent level;
   List<CollisionBlock> collisionBlocks = [];
 

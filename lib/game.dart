@@ -6,14 +6,18 @@ import 'package:flutter/material.dart';
 
 import 'package:pixel_adventure/components/level.dart';
 import 'package:pixel_adventure/components/player.dart';
+import 'package:pixel_adventure/components/jump_button.dart';
 
 class PixelAdventureGame extends FlameGame
-    with HasKeyboardHandlerComponents, DragCallbacks, HasCollisionDetection {
+    with
+        HasKeyboardHandlerComponents,
+        DragCallbacks,
+        HasCollisionDetection,
+        TapCallbacks {
   @override
   Color backgroundColor() => const Color(0xFF211F30);
   late Player player;
-  late CameraComponent cam;
-  bool showJoystick = false;
+  bool showControls = true;
   late JoystickComponent joystick;
   List<String> levels = ["Level-01", "Level-01"];
   int currentLevelIndex = 0;
@@ -23,29 +27,29 @@ class PixelAdventureGame extends FlameGame
     await images.loadAllImages();
 
     _loadLevel();
-
-    if (showJoystick) addJoystick();
+    if (showControls) addJoystick();
 
     return super.onLoad();
   }
 
   @override
   void update(double dt) {
-    if (showJoystick) updateJoystick();
+    if (showControls) updateJoystick();
 
     super.update(dt);
   }
 
   void addJoystick() {
     joystick = JoystickComponent(
+      priority: 10,
       knob: SpriteComponent(sprite: Sprite(images.fromCache("HUD/Knob.png"))),
       background: SpriteComponent(
         sprite: Sprite(images.fromCache("HUD/Joystick.png")),
       ),
-      margin: const EdgeInsets.only(left: 32, bottom: 8),
+      position: Vector2(size.x, camera.viewport.size.y - 48),
     );
-
     add(joystick);
+    add(JumpButton());
   }
 
   void updateJoystick() {
@@ -87,15 +91,13 @@ class PixelAdventureGame extends FlameGame
     player = Player(character: "Mask Dude");
 
     world = Level(levelName: levels[currentLevelIndex], player: player);
-
-    cam = CameraComponent.withFixedResolution(
+    camera = CameraComponent.withFixedResolution(
       width: 640,
       height: 360,
       world: world,
     );
+    camera.priority = -1;
 
-    cam.viewfinder.anchor = Anchor.topLeft;
-
-    addAll([cam, world]);
+    camera.viewfinder.anchor = Anchor.topLeft;
   }
 }
